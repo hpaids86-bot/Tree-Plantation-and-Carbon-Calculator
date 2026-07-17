@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CO₂ Results • Tree Plantation Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main class="shell result">
+      <header class="result__header">
+        <div>
+          <p class="eyebrow">Calculation summary</p>
+          <h1>{{ quantity }} × {{ tree['name'] }} in {{ city['name'] }}</h1>
+          <p>Annual absorption rate: {{ tree['absorption_rate'] }} kg CO₂ per tree</p>
+        </div>
+        <div class="badge" style="background: {{ badge.color }}">
+          <p>{{ badge.label }} badge</p>
+          <strong>{{ impact_score }} / 100</strong>
+        </div>
+      </header>
+
+      <section class="panel-grid">
+        <div class="panel">
+          <h2>Annual impact</h2>
+          <p class="stat">{{ '%.1f'|format(annual_total) }} kg CO₂ / year</p>
+          <p>Total captured by all planted trees each year.</p>
+        </div>
+        <div class="panel">
+          <h2>5-year projection</h2>
+          <p class="stat">{{ '%.1f'|format(projection_5) }} kg CO₂</p>
+          <p>Assuming consistent growth and health.</p>
+        </div>
+        <div class="panel">
+          <h2>10-year projection</h2>
+          <p class="stat">{{ '%.1f'|format(projection_10) }} kg CO₂</p>
+          <p>Tree maturity unlocks higher sequestration.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Climate profile: {{ city['climate'].title() }}</h2>
+        <p>{{ climate_info.get(city['climate'], 'Climate description unavailable.') }}</p>
+        <h3>Top tree suggestions for {{ city['name'] }}</h3>
+        <ul class="pill-list">
+          {% for item in recommendations %}
+          <li>{{ item }}</li>
+          {% else %}
+          <li>No specific recommendations. Try another city.</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Next steps</h2>
+        <p>
+          Track your plantation history, monitor earned badges, and compare progress
+          on the dashboard.
+        </p>
+        <div class="panel__actions">
+          <a class="btn" href="{{ url_for('dashboard') }}">View dashboard</a>
+          <a class="btn btn--ghost" href="{{ url_for('index') }}">Run another calculation</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

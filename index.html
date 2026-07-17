@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tree Plantation Carbon Reduction Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <p class="eyebrow">Tree Plantation Carbon Reduction Calculator</p>
+        <h1>Estimate your CO₂ impact and plant smarter</h1>
+        <p>
+          Choose a tree type, enter how many you planted, and discover the carbon
+          benefit today and for the decade ahead. Get climate-smart
+          recommendations tailored to your city.
+        </p>
+        <div class="hero__actions">
+          <a class="btn" href="#calculator">Start calculating</a>
+          <a class="btn btn--ghost" href="{{ url_for('dashboard') }}">View dashboard</a>
+        </div>
+      </div>
+      <div class="hero__visual">
+        <div class="impact-card">
+          <p>Community impact</p>
+          <h2>Make every tree count</h2>
+          <p>Predict 5 & 10-year absorption and earn sustainability badges.</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell" id="calculator">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <div class="flash">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
+      <section class="panel-grid">
+        <form class="panel" action="{{ url_for('calculate') }}" method="POST">
+          <h2>Tree CO₂ calculator</h2>
+          <label>
+            Tree type
+            <select name="tree_id" required>
+              <option value="">Select tree</option>
+              {% for tree in trees %}
+              <option value="{{ tree['id'] }}">{{ tree['name'] }} ({{ tree['absorption_rate'] }} kg/yr)</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label>
+            Number of trees
+            <input type="number" name="quantity" min="1" value="10" required />
+          </label>
+
+          <label>
+            City / Location
+            <select name="city_id" id="city-select" required>
+              <option value="">Select city</option>
+              {% for city in cities %}
+              <option value="{{ city['id'] }}" {% if default_city and city['id'] == default_city['id'] %}selected{% endif %}>
+                {{ city['name'] }} ({{ city['climate'].title() }})
+              </option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <div class="slider-group">
+            <label for="growth-years">Tree growth visualizer (1-10 years)</label>
+            <input type="range" min="1" max="10" value="5" id="growth-years" />
+            <p><span id="growth-value">5</span> year growth horizon</p>
+            <div class="progress">
+              <div class="progress__bar" id="growth-progress"></div>
+            </div>
+          </div>
+
+          <button class="btn" type="submit">Calculate CO₂ reduction</button>
+        </form>
+
+        <div class="panel">
+          <h2>Climate insights</h2>
+          <div id="climate-details">
+            {% if default_city %}
+            <p class="climate-label">{{ default_city['climate'].title() }} climate</p>
+            <p>{{ climate_info.get(default_city['climate']) }}</p>
+            {% else %}
+            <p>Select a city to view its climate insights.</p>
+            {% endif %}
+          </div>
+
+          <div class="recommendations">
+            <h3>Suggested trees for your city</h3>
+            <ul id="recommendation-list">
+              {% for item in recommendations %}
+              <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell footer">
+      <div>
+        <h4>Why trees?</h4>
+        <p>Native trees can absorb 15–50 kg of CO₂ annually. Strategic planting amplifies the impact over time.</p>
+      </div>
+      <div>
+        <h4>Need more insights?</h4>
+        <p>Visit the dashboard to explore your history, impact badges, and visual charts.</p>
+      </div>
+    </footer>
+
+    <script>
+      window.appData = {{ app_payload|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  </body>
+</html>

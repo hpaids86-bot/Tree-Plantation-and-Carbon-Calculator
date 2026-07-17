@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental Impact Dashboard – EcoTree AI</title>
+    <meta name="description" content="Track platform-wide environmental impact: trees planted, CO₂ absorbed, temperature reduced, oxygen generated, and water conserved — with animated count-up displays.">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9"/>
+                        <path d="M12 14V22" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree AI</span>
+                    <span class="logo-text-sub">Environmental Analyzer</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="pollution.html">Pollution</a></li>
+                <li><a href="green-city-score.html">Green Score</a></li>
+                <li><a href="roi-analyzer.html">ROI Analyzer</a></li>
+                <li><a href="city-heatmap.html">City Heatmap</a></li>
+                <li><a href="impact-dashboard.html" class="active">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="dark-mode-btn" id="darkModeBtn">🌙 Dark</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero -->
+        <div class="page-hero fade-in">
+            <div class="page-hero-kicker">📈 Live Dashboard</div>
+            <h1>Environmental Impact Dashboard</h1>
+            <p>Track cumulative environmental impact across all plantation drives analyzed by the EcoTree AI platform — with animated real-time metrics.</p>
+        </div>
+
+        <!-- Live Timestamp -->
+        <div style="text-align:center; margin-bottom:1.5rem;">
+            <span style="font-size:0.82rem; color:var(--text-secondary); font-weight:600;">
+                🕐 Last updated: <span id="liveTime"></span> &nbsp;|&nbsp; Platform data as of 2026
+            </span>
+        </div>
+
+        <!-- Animated Counter Grid -->
+        <div class="impact-counter-grid">
+            <div class="counter-box fade-up">
+                <span class="counter-icon">🌳</span>
+                <div class="counter-value" id="cntTrees" data-countup="124750" data-duration="2500">0</div>
+                <div class="counter-label">Trees Planted</div>
+                <div class="counter-sublabel">Across platform analyses</div>
+            </div>
+            <div class="counter-box fade-up" style="transition-delay:0.08s;">
+                <span class="counter-icon">💨</span>
+                <div class="counter-value" id="cntCO2" data-countup="3720" data-duration="2200">0</div>
+                <div class="counter-label">CO₂ Absorbed</div>
+                <div class="counter-sublabel">Tonnes over 10 years</div>
+            </div>
+            <div class="counter-box fade-up" style="transition-delay:0.16s;">
+                <span class="counter-icon">🌡️</span>
+                <div class="counter-value" id="cntTemp" data-countup="8430" data-duration="2000">0</div>
+                <div class="counter-label">Temperature Reduced</div>
+                <div class="counter-sublabel">Cumulative °C units</div>
+            </div>
+            <div class="counter-box fade-up" style="transition-delay:0.24s;">
+                <span class="counter-icon">🫧</span>
+                <div class="counter-value" id="cntPollution" data-countup="2150" data-duration="2000">0</div>
+                <div class="counter-label">Pollution Events Offset</div>
+                <div class="counter-sublabel">Thousands of AQI reductions</div>
+            </div>
+            <div class="counter-box fade-up" style="transition-delay:0.32s;">
+                <span class="counter-icon">🌬️</span>
+                <div class="counter-value" id="cntO2" data-countup="92000" data-duration="2500">0</div>
+                <div class="counter-label">Oxygen Generated</div>
+                <div class="counter-sublabel">Tonnes total</div>
+            </div>
+            <div class="counter-box fade-up" style="transition-delay:0.40s;">
+                <span class="counter-icon">💧</span>
+                <div class="counter-value" id="cntWater" data-countup="565000" data-duration="2500">0</div>
+                <div class="counter-label">Water Conserved</div>
+                <div class="counter-sublabel">Kilo-liters retained</div>
+            </div>
+        </div>
+
+        <!-- User Contribution Panel -->
+        <div class="card fade-up" style="margin-top:2.5rem;">
+            <h2 class="card-title">➕ Add Your Plantation Contribution</h2>
+            <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Record your own plantation drive to see its contribution added to the live dashboard.</p>
+            <div class="roi-inputs-grid">
+                <div class="form-group">
+                    <label for="userTrees">Trees You Planted</label>
+                    <input type="number" id="userTrees" placeholder="e.g. 250" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="userSpecies">Primary Species</label>
+                    <select id="userSpecies">
+                        <option value="Neem">Neem</option>
+                        <option value="Peepal">Peepal</option>
+                        <option value="Banyan">Banyan</option>
+                        <option value="Mango">Mango</option>
+                        <option value="Bamboo">Bamboo</option>
+                        <option value="Moringa">Moringa</option>
+                        <option value="Arjun">Arjun</option>
+                        <option value="Karanj">Karanj</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="userCity">City</label>
+                    <input type="text" id="userCity" placeholder="e.g. Chennai">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addContribution()">📊 Add to Dashboard</button>
+                <button class="btn btn-secondary" onclick="resetContribution()">↺ Reset</button>
+            </div>
+            <div id="contributionResult" style="display:none; margin-top:1.5rem;" class="result-callout"></div>
+        </div>
+
+        <!-- Monthly Impact Chart -->
+        <div class="chart-wrapper fade-up" style="margin-top:1.5rem;">
+            <div class="chart-title">📅 Monthly Plantation Impact Trend</div>
+            <div style="height:280px; position:relative;">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Species Distribution + Goals -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1.5rem;">
+            <div class="chart-wrapper fade-up">
+                <div class="chart-title">🌿 Species Distribution</div>
+                <div style="height:260px; position:relative;">
+                    <canvas id="speciesChart"></canvas>
+                </div>
+            </div>
+            <div class="card fade-up" style="margin-top:0;">
+                <div class="card-title" style="font-size:1.2rem;">🎯 Platform Goals 2026</div>
+                <div style="margin-top:1rem;">
+                    <div class="progress-label">
+                        <span>Trees Target (500K)</span>
+                        <span>25%</span>
+                    </div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="25%"></div></div>
+
+                    <div style="margin-bottom:0.75rem;"></div>
+                    <div class="progress-label">
+                        <span>CO₂ Target (15,000 T)</span>
+                        <span>24.8%</span>
+                    </div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="24.8%" style="background:linear-gradient(90deg,#03A9F4,#7ED957);"></div></div>
+
+                    <div style="margin-bottom:0.75rem;"></div>
+                    <div class="progress-label">
+                        <span>Cities Covered (150)</span>
+                        <span>75%</span>
+                    </div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="75%" style="background:linear-gradient(90deg,#9C27B0,#7ED957);"></div></div>
+
+                    <div style="margin-bottom:0.75rem;"></div>
+                    <div class="progress-label">
+                        <span>Water Conserved (2M kL)</span>
+                        <span>28%</span>
+                    </div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="28%" style="background:linear-gradient(90deg,#FF9800,#7ED957);"></div></div>
+
+                    <div style="margin-bottom:0.75rem;"></div>
+                    <div class="progress-label">
+                        <span>Species Documented (50)</span>
+                        <span>60%</span>
+                    </div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="60%" style="background:linear-gradient(90deg,#FF5722,#7ED957);"></div></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <p><strong>EcoTree AI</strong> – Environmental Impact Dashboard</p>
+        <p class="footer-sub">Live platform metrics for trees planted, CO₂ absorbed, oxygen generated, and water conserved</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/cities-data.js"></script>
+    <script src="static/premium-modules.js"></script>
+    <script>
+        let monthlyChartInst = null, speciesChartInst = null;
+        let currentData = { ...ImpactDashboard.PLATFORM_DATA };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Live time
+            function updateTime() {
+                document.getElementById('liveTime').textContent = new Date().toLocaleTimeString('en-IN');
+            }
+            updateTime(); setInterval(updateTime, 1000);
+
+            renderCharts();
+            initCounters(currentData);
+
+            // Trigger progress bars after slight delay
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+                    if (bar.dataset.width) bar.style.width = bar.dataset.width;
+                });
+            }, 600);
+        });
+
+        function initCounters(data) {
+            const mapping = [
+                ['cntTrees', data.treesPlanted],
+                ['cntCO2', Math.round(data.co2Absorbed / 1000)],
+                ['cntTemp', data.tempReduced],
+                ['cntPollution', Math.round(data.pollutionReduced / 1000)],
+                ['cntO2', Math.round(data.oxygenGenerated / 1000)],
+                ['cntWater', Math.round(data.waterConserved / 1000)],
+            ];
+            mapping.forEach(([id, target]) => {
+                const el = document.getElementById(id);
+                if (el) CountUpAnimator.animate(el, target, 2500);
+            });
+        }
+
+        function renderCharts() {
+            const monthly = ImpactDashboard.MONTHLY_DATA;
+
+            // Monthly chart
+            if (monthlyChartInst) monthlyChartInst.destroy();
+            monthlyChartInst = new Chart(document.getElementById('monthlyChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthly.labels,
+                    datasets: [
+                        {
+                            label: 'Trees Planted',
+                            data: monthly.trees,
+                            backgroundColor: 'rgba(126,217,87,0.6)',
+                            borderRadius: 6,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'CO₂ Absorbed (kg)',
+                            data: monthly.co2,
+                            type: 'line',
+                            borderColor: '#03A9F4',
+                            backgroundColor: 'rgba(3,169,244,0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2.5,
+                            yAxisID: 'y1',
+                            pointRadius: 3,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: 'var(--text-secondary)', font: { size: 11 } } } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: 'var(--text-secondary)', font: { size: 11 } } },
+                        y: {
+                            grid: { color: 'rgba(126,217,87,0.08)' },
+                            ticks: { color: 'rgba(100,120,100,0.8)', font: { size: 10 } },
+                            title: { display: true, text: 'Trees', color: 'var(--text-secondary)' }
+                        },
+                        y1: {
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: 'rgba(3,169,244,0.7)', font: { size: 10 } },
+                            title: { display: true, text: 'CO₂ (kg)', color: '#03A9F4' }
+                        }
+                    }
+                }
+            });
+
+            // Species donut
+            if (speciesChartInst) speciesChartInst.destroy();
+            speciesChartInst = new Chart(document.getElementById('speciesChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Neem', 'Peepal', 'Bamboo', 'Moringa', 'Banyan', 'Mango', 'Others'],
+                    datasets: [{
+                        data: [22, 18, 15, 12, 10, 8, 15],
+                        backgroundColor: ['#4CAF50','#7ED957','#03A9F4','#FF9800','#9C27B0','#FF5722','#607D8B'],
+                        borderWidth: 2,
+                        borderColor: 'var(--card-bg)',
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: 'var(--text-secondary)', font: { size: 11 }, padding: 12, boxWidth: 14 }
+                        }
+                    },
+                    cutout: '60%',
+                }
+            });
+        }
+
+        function addContribution() {
+            const trees = parseInt(document.getElementById('userTrees').value);
+            if (!trees || trees < 1) { alert('Enter a valid tree count.'); return; }
+
+            const species = document.getElementById('userSpecies').value;
+            const city = document.getElementById('userCity').value || 'India';
+            const newData = ImpactDashboard.addUserData(trees, species);
+            currentData = newData;
+
+            // Re-animate counters
+            initCounters(newData);
+
+            // Show result
+            const co2 = trees * 22 * 10;
+            const o2 = trees * 740;
+            const water = trees * 4500;
+            const resultDiv = document.getElementById('contributionResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>🎉 Your Contribution Added!</strong><br>
+                <strong>${trees.toLocaleString('en-IN')}</strong> ${species} trees in ${city} will absorb approximately
+                <strong>${co2.toLocaleString('en-IN')} kg CO₂</strong> over 10 years,
+                generate <strong>${o2.toLocaleString('en-IN')} kg O₂</strong>,
+                and retain <strong>${(water/1000).toLocaleString('en-IN')} kL</strong> of water annually.
+            `;
+        }
+
+        function resetContribution() {
+            document.getElementById('userTrees').value = '';
+            document.getElementById('userCity').value = '';
+            document.getElementById('contributionResult').style.display = 'none';
+            currentData = { ...ImpactDashboard.PLATFORM_DATA };
+            initCounters(currentData);
+        }
+    </script>
+</body>
+</html>

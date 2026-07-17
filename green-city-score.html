@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green City Score – EcoTree AI Environmental Analyzer</title>
+    <meta name="description" content="Calculate a 0-100 city sustainability score based on AQI, tree density, population, and green cover. Compare Indian cities from Critical to Eco Champion.">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9"/>
+                        <path d="M12 14V22" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree AI</span>
+                    <span class="logo-text-sub">Environmental Analyzer</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="pollution.html">Pollution</a></li>
+                <li><a href="green-city-score.html" class="active">Green Score</a></li>
+                <li><a href="roi-analyzer.html">ROI Analyzer</a></li>
+                <li><a href="city-heatmap.html">City Heatmap</a></li>
+                <li><a href="impact-dashboard.html">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="dark-mode-btn" id="darkModeBtn">🌙 Dark</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Page Hero -->
+        <div class="page-hero fade-in">
+            <div class="page-hero-kicker">🏙️ Premium Module</div>
+            <h1>Green City Score</h1>
+            <p>Calculate a 0–100 sustainability score for any Indian city based on air quality, tree density, population density, and green cover percentage.</p>
+        </div>
+
+        <!-- Input Card -->
+        <div class="card fade-up">
+            <h2 class="card-title">📍 Select City or Enter Custom Data</h2>
+            <div class="roi-inputs-grid">
+                <div class="form-group">
+                    <label for="citySelect">Select Indian City (Auto-fill)</label>
+                    <select id="citySelect" onchange="autofillCity(this.value)">
+                        <option value="">— Choose a city —</option>
+                    </select>
+                    <small class="form-hint">Or enter custom values below manually</small>
+                </div>
+                <div class="form-group">
+                    <label for="aqiInput">AQI (Air Quality Index)</label>
+                    <input type="number" id="aqiInput" placeholder="e.g. 120" min="0" max="999">
+                </div>
+                <div class="form-group">
+                    <label for="treeDensityInput">Tree Density (per 1000 residents)</label>
+                    <input type="number" id="treeDensityInput" placeholder="e.g. 200" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="populationInput">Population (millions)</label>
+                    <input type="number" id="populationInput" placeholder="e.g. 5.5" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="greenCoverInput">Green Cover (%)</label>
+                    <input type="number" id="greenCoverInput" placeholder="e.g. 22" min="0" max="100">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="calcScoreBtn" onclick="calculateGreenScore()">🌿 Calculate Green Score</button>
+                <button class="btn btn-secondary" onclick="resetScore()">↺ Reset</button>
+            </div>
+        </div>
+
+        <!-- Score Results -->
+        <div id="scoreResults" style="display:none;">
+            <div class="card fade-up">
+                <h2 class="card-title">🏆 Sustainability Score</h2>
+                <div class="score-section">
+                    <!-- Gauge -->
+                    <div class="score-gauge-wrap">
+                        <svg class="score-ring-svg" width="220" height="220" viewBox="0 0 220 220">
+                            <defs>
+                                <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#7ED957"/>
+                                    <stop offset="100%" stop-color="#2c6e49"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Background ring -->
+                            <circle cx="110" cy="110" r="90" fill="none" stroke="rgba(126,217,87,0.12)" stroke-width="18"/>
+                            <!-- Score arc -->
+                            <circle id="scoreArc" cx="110" cy="110" r="90" fill="none"
+                                stroke="url(#scoreGrad)" stroke-width="18"
+                                stroke-linecap="round"
+                                stroke-dasharray="565.5"
+                                stroke-dashoffset="565.5"
+                                transform="rotate(-90 110 110)"
+                                style="transition: stroke-dashoffset 1.5s cubic-bezier(0.25,0.8,0.25,1);"/>
+                            <!-- Center text -->
+                            <text id="scoreText" x="110" y="100" text-anchor="middle" font-size="44" font-weight="900"
+                                fill="var(--text-primary)" font-family="Outfit, sans-serif">0</text>
+                            <text x="110" y="128" text-anchor="middle" font-size="13" fill="var(--text-secondary)"
+                                font-family="Outfit, sans-serif" font-weight="600">/ 100</text>
+                            <text x="110" y="150" text-anchor="middle" font-size="11" fill="var(--text-secondary)"
+                                font-family="Outfit, sans-serif">Sustainability Score</text>
+                        </svg>
+                        <div id="scoreBadgeEl"></div>
+                        <p id="scoreRecommendation" style="text-align:center; font-size:0.9rem; color:var(--text-secondary); max-width:320px; line-height:1.6;"></p>
+                    </div>
+
+                    <!-- Sub-scores -->
+                    <div>
+                        <div class="score-metrics-grid">
+                            <div class="score-metric-card fade-up">
+                                <div class="score-metric-label">🌬️ Air Quality Score</div>
+                                <div class="score-metric-value" id="aqiScoreVal">--</div>
+                                <div class="progress-bar-wrap" style="margin-top:0.5rem;">
+                                    <div class="progress-bar-fill" id="aqiScoreBar" data-width="0%"></div>
+                                </div>
+                            </div>
+                            <div class="score-metric-card fade-up" style="transition-delay:0.08s;">
+                                <div class="score-metric-label">🌳 Tree Density Score</div>
+                                <div class="score-metric-value" id="treeScoreVal">--</div>
+                                <div class="progress-bar-wrap" style="margin-top:0.5rem;">
+                                    <div class="progress-bar-fill" id="treeScoreBar" data-width="0%"></div>
+                                </div>
+                            </div>
+                            <div class="score-metric-card fade-up" style="transition-delay:0.16s;">
+                                <div class="score-metric-label">🌿 Green Cover Score</div>
+                                <div class="score-metric-value" id="greenScoreVal">--</div>
+                                <div class="progress-bar-wrap" style="margin-top:0.5rem;">
+                                    <div class="progress-bar-fill" id="greenScoreBar" data-width="0%"></div>
+                                </div>
+                            </div>
+                            <div class="score-metric-card fade-up" style="transition-delay:0.24s;">
+                                <div class="score-metric-label">👥 Population Score</div>
+                                <div class="score-metric-value" id="popScoreVal">--</div>
+                                <div class="progress-bar-wrap" style="margin-top:0.5rem;">
+                                    <div class="progress-bar-fill" id="popScoreBar" data-width="0%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Radar Chart -->
+                        <div class="chart-wrapper" style="margin-top:1.5rem;">
+                            <div class="chart-title">📡 Sustainability Radar</div>
+                            <div style="height:260px; position:relative;">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- City Comparison Table -->
+        <div class="card fade-up">
+            <h2 class="card-title">🏅 City Rankings – Top 10 Cleanest vs Most Polluted</h2>
+            <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Based on environmental data for major Indian cities. Click a city to calculate its Green Score.</p>
+            <div class="city-comparison-table" id="comparisonTable">
+                <div class="city-comparison-row head-row">
+                    <span>#</span>
+                    <span>City</span>
+                    <span>Score</span>
+                    <span>AQI</span>
+                    <span>Rating</span>
+                </div>
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p><strong>EcoTree AI</strong> – Green City Score Module</p>
+        <p class="footer-sub">Sustainability scoring based on AQI, tree density, population density, and green cover data</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/cities-data.js"></script>
+    <script src="static/premium-modules.js"></script>
+    <script>
+        let radarChart = null;
+
+        // Populate city select
+        document.addEventListener('DOMContentLoaded', () => {
+            const sel = document.getElementById('citySelect');
+            if (typeof INDIAN_CITIES !== 'undefined') {
+                Object.keys(INDIAN_CITIES).sort().forEach(city => {
+                    const opt = document.createElement('option');
+                    opt.value = city;
+                    opt.textContent = city;
+                    sel.appendChild(opt);
+                });
+            }
+            buildComparisonTable();
+        });
+
+        function autofillCity(city) {
+            if (!city || typeof INDIAN_CITIES === 'undefined') return;
+            const d = INDIAN_CITIES[city];
+            if (!d) return;
+            document.getElementById('aqiInput').value = d.aqi || 100;
+            document.getElementById('treeDensityInput').value = d.treeDensity || 200;
+            document.getElementById('populationInput').value = d.population || 3;
+            document.getElementById('greenCoverInput').value = d.greenCover || 20;
+        }
+
+        function calculateGreenScore() {
+            const aqi       = parseFloat(document.getElementById('aqiInput').value);
+            const tree      = parseFloat(document.getElementById('treeDensityInput').value);
+            const pop       = parseFloat(document.getElementById('populationInput').value);
+            const green     = parseFloat(document.getElementById('greenCoverInput').value);
+
+            if (isNaN(aqi) || isNaN(tree) || isNaN(pop) || isNaN(green)) {
+                alert('Please fill in all fields or select a city.');
+                return;
+            }
+
+            const result = GreenCityScore.calculate(aqi, tree, pop, green);
+            displayScore(result);
+        }
+
+        function displayScore(result) {
+            const resultsDiv = document.getElementById('scoreResults');
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Animate arc
+            const arc = document.getElementById('scoreArc');
+            const circumference = 565.5;
+            const offset = circumference - (result.score / 100) * circumference;
+            setTimeout(() => { arc.style.strokeDashoffset = offset; }, 100);
+
+            // Animate number
+            const textEl = document.getElementById('scoreText');
+            CountUpAnimator.animate({ textContent: '' }, result.score, 1500, '', '');
+            let count = 0;
+            const step = result.score / 60;
+            const interval = setInterval(() => {
+                count = Math.min(count + step, result.score);
+                textEl.textContent = Math.round(count);
+                if (count >= result.score) clearInterval(interval);
+            }, 25);
+
+            // Badge
+            const badge = result.badge;
+            document.getElementById('scoreBadgeEl').innerHTML =
+                `<div class="score-badge ${badge.cls}" style="margin-top:1rem;">${badge.label}</div>`;
+            document.getElementById('scoreRecommendation').textContent = result.recommendation;
+
+            // Sub-scores
+            ['aqi','tree','green','pop'].forEach(k => {
+                const val = result[k + 'Score'];
+                document.getElementById(k + 'ScoreVal').textContent = val;
+                const bar = document.getElementById(k + 'ScoreBar');
+                bar.dataset.width = val + '%';
+                setTimeout(() => { bar.style.width = val + '%'; }, 400);
+            });
+
+            // Radar chart
+            renderRadar(result);
+
+            // Fade-up cards
+            resultsDiv.querySelectorAll('.fade-up').forEach((el, i) => {
+                setTimeout(() => el.classList.add('revealed'), 200 + i * 100);
+            });
+        }
+
+        function renderRadar(result) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (radarChart) radarChart.destroy();
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Air Quality', 'Tree Density', 'Green Cover', 'Pop. Score', 'Overall'],
+                    datasets: [{
+                        label: 'City Score',
+                        data: [result.aqiScore, result.treeScore, result.greenScore, result.popScore, result.score],
+                        backgroundColor: 'rgba(126,217,87,0.2)',
+                        borderColor: '#7ED957',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#4CAF50',
+                        pointRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0, max: 100,
+                            ticks: { stepSize: 25, color: 'rgba(126,217,87,0.7)', font: { size: 10 } },
+                            grid: { color: 'rgba(126,217,87,0.15)' },
+                            pointLabels: { color: 'var(--text-secondary)', font: { size: 11, weight: '600' } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function buildComparisonTable() {
+            const table = document.getElementById('comparisonTable');
+            const data = GreenCityScore.getComparisonData();
+            data.forEach((city, i) => {
+                const row = document.createElement('div');
+                row.className = 'city-comparison-row fade-up';
+                row.style.cursor = 'pointer';
+                row.innerHTML = `
+                    <span style="font-weight:700; color:${i < 3 ? 'var(--green-accent)' : 'var(--text-secondary)'}">${i + 1}</span>
+                    <span style="font-weight:600;">${city.name}</span>
+                    <span style="font-weight:800; color:var(--green-accent);">${city.score}</span>
+                    <span>${city.aqi}</span>
+                    <span style="font-size:0.8rem;">${city.badge.label}</span>
+                `;
+                row.onclick = () => {
+                    document.getElementById('citySelect').value = city.name;
+                    autofillCity(city.name);
+                    calculateGreenScore();
+                };
+                table.appendChild(row);
+            });
+            setTimeout(() => {
+                table.querySelectorAll('.fade-up').forEach((el, i) => {
+                    setTimeout(() => el.classList.add('revealed'), i * 60);
+                });
+            }, 300);
+        }
+
+        function resetScore() {
+            ['aqiInput','treeDensityInput','populationInput','greenCoverInput'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('citySelect').value = '';
+            document.getElementById('scoreResults').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

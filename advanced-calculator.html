@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Analytics - EcoTree AI Sustainability Platform</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Premium Sticky Navigation -->
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9" />
+                        <path d="M12 14V22M10 14C10 14 7 12 7 9C7 6 9 6 10 6M14 14C14 14 17 12 17 9C17 6 15 6 14 6"
+                            stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                        <circle cx="7" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <circle cx="17" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <path d="M6 12L4 10M18 12L20 10" stroke="white" stroke-width="1.2" stroke-linecap="round"
+                            opacity="0.6" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree</span>
+                    <span class="logo-text-sub">AI Sustainability</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="advanced-calculator.html" class="active">Advanced</a></li>
+                <li><a href="pollution.html">Pollution</a></li>
+                <li><a href="ai_features/index.html">AI Features</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1 class="card-title">Advanced Analytics & Plantation Planners</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Leverage soil dynamics, localized precipitation, and growth models to optimize your environmental yields.
+            </p>
+
+            <!-- Feature Tabs -->
+            <div class="feature-tabs">
+                <button class="feature-tab active" onclick="showFeature('optimizer', event)">Tree Optimizer</button>
+                <button class="feature-tab" onclick="showFeature('soil', event)">Soil Suitability</button>
+                <button class="feature-tab" onclick="showFeature('climate', event)">Climate Planner</button>
+                <button class="feature-tab" onclick="showFeature('calendar', event)">Planting Calendar</button>
+            </div>
+
+            <!-- Tab 1: Tree Combination Optimizer -->
+            <div id="optimizer" class="feature-content active">
+                <h2 class="card-title" style="font-size: 1.35rem; margin-bottom: 0.5rem;">Smart Tree Combination Optimizer</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Determine the most cost-effective mix of trees to hit your annual carbon absorption target.</p>
+
+                <form id="optimizerForm" onsubmit="optimizeTrees(event)">
+                    <div class="form-group">
+                        <label for="targetCO2">Target CO₂ Reduction (kg/year)</label>
+                        <input type="number" id="targetCO2" min="1" placeholder="e.g., 2000" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Find Optimal Species Mix</button>
+                </form>
+
+                <div id="optimizerResults" style="margin-top: 1.5rem;"></div>
+            </div>
+
+            <!-- Tab 2: Soil Suitability Matcher -->
+            <div id="soil" class="feature-content">
+                <h2 class="card-title" style="font-size: 1.35rem; margin-bottom: 0.5rem;">Soil Suitability Matcher</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Match tree species to your land's specific soil mechanics and climate constraints.</p>
+
+                <form id="soilForm" onsubmit="findSoilTrees(event)">
+                    <div class="form-group">
+                        <label for="soilType">Soil Profile</label>
+                        <select id="soilType" required>
+                            <option value="">Select soil type</option>
+                            <option value="Alluvial">Alluvial (River Basin)</option>
+                            <option value="Black">Black (Deccan Regur)</option>
+                            <option value="Red">Red Soil</option>
+                            <option value="Laterite">Laterite Soil</option>
+                            <option value="Arid">Desert / Arid Sandy</option>
+                            <option value="Mountain">Mountain / Forest Humus</option>
+                            <option value="Sandy">Coastal Sandy</option>
+                            <option value="Clay">Heavy Clay</option>
+                            <option value="Loamy">Rich Loamy</option>
+                            <option value="Saline">Saline / Alkaline</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="climateZone">Climate Zone</label>
+                        <select id="climateZone" required>
+                            <option value="">Select climate zone</option>
+                            <option value="Tropical">Tropical</option>
+                            <option value="Subtropical">Subtropical</option>
+                            <option value="Temperate">Temperate / Hilly</option>
+                            <option value="Arid">Arid / Semi-Arid</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Match Tree Species</button>
+                </form>
+
+                <div id="soilResults" style="margin-top: 1.5rem;"></div>
+            </div>
+
+            <!-- Tab 3: Climate-Based Tree Planner -->
+            <div id="climate" class="feature-content">
+                <h2 class="card-title" style="font-size: 1.35rem; margin-bottom: 0.5rem;">Climate-Based Tree Planner</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Review climate-specific plantation strategies for your city.</p>
+
+                <form id="climateForm" onsubmit="getClimateRecommendations(event)">
+                    <div class="form-group">
+                        <label for="climateCity">Target City</label>
+                        <select id="climateCity" class="city-select" required>
+                            <option value="">Select a city</option>
+                            <!-- Dynamically filled on load -->
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Load Climate Strategy</button>
+                </form>
+
+                <div id="climateResults" style="display: none; margin-top: 2rem;">
+                    <div class="card" style="background: rgba(126, 217, 87, 0.08); border-color: rgba(126, 217, 87, 0.2);">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Climate Profile Overview</h3>
+                        <div id="climateInfo"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Recommended Native Trees</h3>
+                        <div id="climateTrees"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Optimal Planting Seasons</h3>
+                        <div id="plantingMonths"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Strategic Considerations</h3>
+                        <div id="climateConsiderations"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Visual Planting Calendar -->
+            <div id="calendar" class="feature-content">
+                <h2 class="card-title" style="font-size: 1.35rem; margin-bottom: 0.5rem;">Visual Planting Calendar</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Observe month-wise planting scores mapping out dry vs monsoon seasons.</p>
+
+                <form id="calendarForm" onsubmit="showCalendar(event)">
+                    <div class="form-group">
+                        <label for="calendarCity">Target City</label>
+                        <select id="calendarCity" class="city-select" required>
+                            <option value="">Select a city</option>
+                            <!-- Dynamically filled on load -->
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Generate Calendar</button>
+                </form>
+
+                <div id="calendarResults" style="display: none; margin-top: 2rem;">
+                    <div class="card" style="padding: 1.5rem;">
+                        <div id="visualCalendar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>EcoTree AI Sustainability Platform • Built for smart city environmental planning</p>
+        <p class="footer-sub">Premium Plantation Analytics & Carbon Modeling Solutions</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/cities-data.js"></script>
+    <script src="static/auth.js"></script>
+    <script src="static/auth-nav.js"></script>
+    <script src="static/advanced-features.js"></script>
+    <script src="static/climate-features.js"></script>
+    <script src="static/plantation-calendar.js"></script>
+    <script src="static/advanced-calculator.js"></script>
+    <script>
+        function generateCityOptions() {
+            if (typeof INDIAN_CITIES === 'undefined') {
+                return '<option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option>';
+            }
+            const cities = Object.keys(INDIAN_CITIES).sort();
+            return '<option value="">Select a city</option>' + cities.map(city => `<option value="${city}">${city}</option>`).join('');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const citySelects = document.querySelectorAll('.city-select');
+            const cityOptions = generateCityOptions();
+            citySelects.forEach(select => {
+                select.innerHTML = cityOptions;
+            });
+        });
+    </script>
+</body>
+
+</html>

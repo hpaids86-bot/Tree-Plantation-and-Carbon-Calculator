@@ -1,0 +1,11 @@
+ [
+  {"name": "Neem", "absorption_rate": 26},
+  {"name": "Mango", "absorption_rate": 34},
+  {"name": "Banyan", "absorption_rate": 45},
+  {"name": "Teak", "absorption_rate": 38},
+  {"name": "Peepal", "absorption_rate": 47},
+  {"name": "Jamun", "absorption_rate": 30},
+  {"name": "Gulmohar", "absorption_rate": 28},
+  {"name": "Ashoka", "absorption_rate": 24},
+  {"name": "Rain Tree", "absorption_rate": 36}
+]

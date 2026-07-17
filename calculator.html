@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Calculator - EcoTree AI Sustainability Platform</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+</head>
+
+<body>
+    <!-- Premium Sticky Navigation -->
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9" />
+                        <path d="M12 14V22M10 14C10 14 7 12 7 9C7 6 9 6 10 6M14 14C14 14 17 12 17 9C17 6 15 6 14 6"
+                            stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                        <circle cx="7" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <circle cx="17" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <path d="M6 12L4 10M18 12L20 10" stroke="white" stroke-width="1.2" stroke-linecap="round"
+                            opacity="0.6" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree</span>
+                    <span class="logo-text-sub">AI Sustainability</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calculator.html" class="active">Calculator</a></li>
+                <li><a href="advanced-calculator.html">Advanced</a></li>
+                <li><a href="pollution.html">Pollution</a></li>
+                <li><a href="ai_features/index.html">AI Features</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Dual Carbon Calculator Core Section -->
+        <div class="card">
+            <h1 class="card-title">Carbon Offset Calculator</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Determine the environmental impact of your tree plantation based on localized city climate conditions.
+            </p>
+
+            <form id="calculatorForm">
+                <div class="form-group">
+                    <label for="species">Tree Species</label>
+                    <select id="species" required>
+                        <option value="">Select a species</option>
+                        <!-- Options populated by JS or static list aligned with TREE_SPECIES -->
+                    </select>
+                </div>
+
+                <div id="customSpeciesGroup" class="form-group" style="display: none;">
+                    <label for="customSpeciesName">Custom Species Name</label>
+                    <input type="text" id="customSpeciesName" placeholder="Enter species name">
+                </div>
+
+                <div id="customCO2Group" class="form-group" style="display: none;">
+                    <label for="customCO2">CO₂ Absorption (kg per year)</label>
+                    <input type="number" id="customCO2" min="1" placeholder="Enter CO₂ absorption rate">
+                </div>
+
+                <div class="form-group">
+                    <label for="calculatorCity">City in India</label>
+                    <select id="calculatorCity" required>
+                        <option value="">Select a city</option>
+                    </select>
+                    <small class="form-hint">Provides location-specific soil suitability and climate index checks.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="count">Number of Trees</label>
+                    <input type="number" id="count" min="1" max="1000000" required placeholder="e.g., 5000">
+                    <small class="form-hint">Calculate large-scale forestation campaigns up to 1M trees.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="years">Years Projected</label>
+                    <input type="number" id="years" min="1" max="100" required placeholder="e.g. 10">
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Calculate Carbon Offset</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetCalculator()">Reset</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Dynamic Results Panel -->
+        <div id="resultsSection" class="card" style="display: none;">
+            <h2 class="card-title">Impact Forecast Results</h2>
+            <div id="resultsContent" style="margin-bottom: 2rem;"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generatePDF()">Generate PDF Tree Passport</button>
+            </div>
+        </div>
+
+        <!-- Planning Helpers (Dual calculator mode: footprint to trees and timeline) -->
+        <div class="card">
+            <h2 class="card-title">Forestation Planning Assistants</h2>
+            <p style="color: var(--text-secondary);">Simulate carbon profiles before starting your plantation drive.</p>
+            
+            <div class="planner-grid">
+                <!-- Footprint to Trees required -->
+                <div class="planner-card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>👣</span> Footprint Offset Estimator
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        Calculate the number of trees needed to fully offset a specific carbon output.
+                    </p>
+                    <div class="form-group">
+                        <label for="annualFootprint">Annual CO₂ Emissions (kg)</label>
+                        <input type="number" id="annualFootprint" placeholder="e.g., 3500">
+                    </div>
+                    <div class="form-group">
+                        <label for="footprintSpecies">Offset Tree Species</label>
+                        <select id="footprintSpecies"></select>
+                    </div>
+                    <button class="btn btn-primary" id="footprintCalcBtn" style="width: 100%;">Calculate Trees Needed</button>
+                    <div id="footprintPlannerResult" class="result-callout" style="display: none;"></div>
+                </div>
+
+                <!-- Tree Count to Timeline absorption -->
+                <div class="planner-card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>⏳</span> Long-Term Impact Trajectory
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        Visualize cumulative carbon absorption timelines for a set tree count.
+                    </p>
+                    <div class="form-group">
+                        <label for="plannerTreeCount">Trees to Plant</label>
+                        <input type="number" id="plannerTreeCount" placeholder="e.g., 250">
+                    </div>
+                    <div class="form-group">
+                        <label for="plannerSpecies">Tree Species</label>
+                        <select id="plannerSpecies"></select>
+                    </div>
+                    <button class="btn btn-primary" id="timelineCalcBtn" style="width: 100%;">Render Absorption Trajectory</button>
+                    <div class="chart-container" style="height: 180px; margin-top: 1rem; display: none;" id="chartContainer">
+                        <canvas id="plannerTimelineChart"></canvas>
+                    </div>
+                    <div id="timelineSummary" class="result-callout" style="display: none; margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>EcoTree AI Sustainability Platform • Built for smart city environmental planning</p>
+        <p class="footer-sub">Premium Plantation Analytics & Carbon Modeling Solutions</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/cities-data.js"></script>
+    <script src="static/auth.js"></script>
+    <script src="static/auth-nav.js"></script>
+    <script src="static/calculator.js"></script>
+</body>
+
+</html>

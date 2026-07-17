@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Temperature Reducer - EcoTree AI Sustainability Platform</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Premium Sticky Navigation -->
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9" />
+                        <path d="M12 14V22M10 14C10 14 7 12 7 9C7 6 9 6 10 6M14 14C14 14 17 12 17 9C17 6 15 6 14 6"
+                            stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                        <circle cx="7" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <circle cx="17" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <path d="M6 12L4 10M18 12L20 10" stroke="white" stroke-width="1.2" stroke-linecap="round"
+                            opacity="0.6" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree</span>
+                    <span class="logo-text-sub">AI Sustainability</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../calculator.html">Calculator</a></li>
+                <li><a href="../advanced-calculator.html">Advanced</a></li>
+                <li><a href="../pollution.html">Pollution</a></li>
+                <li><a href="index.html" class="active">AI Features</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <span style="font-size: 2rem;">🌡️</span>
+            <h1 class="card-title">Tree Temperature Reducer (Thermal AI)</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Simulate how local urban forestry designs mitigate solar irradiation and lower ambient microclimate temperatures through canopy shading and transpirational cooling.
+            </p>
+
+            <!-- Input Form -->
+            <form id="thermalForm" onsubmit="calculateCooling(event)">
+                <div class="planner-grid" style="margin-top: 0;">
+                    
+                    <div class="form-group">
+                        <label for="thermalSpecies">Tree Species</label>
+                        <select id="thermalSpecies" required>
+                            <option value="">Select a species</option>
+                            <option value="Neem">Neem (Azadirachta indica)</option>
+                            <option value="Banyan">Banyan (Ficus benghalensis)</option>
+                            <option value="Mango">Mango (Mangifera indica)</option>
+                            <option value="Bamboo">Bamboo (Bambusoideae)</option>
+                            <option value="Eucalyptus">Eucalyptus (Myrtaceae)</option>
+                            <option value="Peepal">Peepal (Ficus religiosa)</option>
+                            <option value="Teak">Teak (Tectona grandis)</option>
+                            <option value="Moringa">Moringa (Moringa oleifera)</option>
+                            <option value="Tamarind">Tamarind (Tamarindus indica)</option>
+                            <option value="Casuarina">Casuarina (Equisetifolia)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thermalTrees">Number of Trees</label>
+                        <input type="number" id="thermalTrees" min="1" max="100000" placeholder="e.g. 500" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thermalArea">Land Area (Acres)</label>
+                        <input type="number" id="thermalArea" step="0.01" min="0.01" placeholder="e.g. 2.5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thermalLocation">Location Type</label>
+                        <select id="thermalLocation" required>
+                            <option value="">Select location type</option>
+                            <option value="Urban Street">Urban Street Corridor (High Heat Island)</option>
+                            <option value="Urban Park">Urban Park Buffer Zone</option>
+                            <option value="Rural Farmland">Rural Farmland Agroforestry</option>
+                            <option value="Coastal Area">Coastal Belt Area</option>
+                            <option value="Industrial Zone">Industrial / Commercial Yard</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thermalTemp">Current Temperature (°C)</label>
+                        <input type="number" id="thermalTemp" step="0.1" min="-10" max="60" placeholder="e.g. 38.5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thermalCanopy">Target Canopy Coverage</label>
+                        <div class="range-slider-group">
+                            <input type="range" id="thermalCanopy" min="10" max="100" value="50" oninput="updateCanopyLabel(this.value)">
+                            <span class="range-value" id="canopyLabel">50%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Run Thermodynamic Simulation</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetThermal()">Reset Fields</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Simulation Results Section (Visible after calculation) -->
+        <div id="thermalResultsSection" style="display: none;">
+            
+            <div class="planner-grid">
+                <!-- Highlighted Thermal Reduction Result -->
+                <div class="card" id="comfortCard" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-left: 8px solid var(--green-primary);">
+                    <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); font-weight: 600;">Net Temperature Reduction</span>
+                    <h2 id="resultReduction" style="font-size: 3.2rem; font-weight: 800; color: var(--text-primary); margin: 0.5rem 0;">-0.0°C</h2>
+                    <div class="pill" id="resultComfort" style="background: rgba(126, 217, 87, 0.25); color: var(--text-primary); font-weight: 700; font-size: 0.9rem;">Comfort Index</div>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-secondary);">
+                        Estimated Local Temperature: <strong id="resultNewTemp" style="color: var(--text-primary);">--°C</strong>
+                    </p>
+                </div>
+
+                <!-- Secondary Ecological Benefits -->
+                <div class="card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">Secondary Microclimate Benefits</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <span style="font-size: 1.75rem;">🔌</span>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; display: block;">Air Conditioners Offset</span>
+                                <strong id="metricAC" style="font-size: 1.1rem; color: var(--text-primary);">-- AC units off</strong>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <span style="font-size: 1.75rem;">⚡</span>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; display: block;">Annual Energy Saved</span>
+                                <strong id="metricKwh" style="font-size: 1.1rem; color: var(--text-primary);">-- kWh/year</strong>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <span style="font-size: 1.75rem;">🍃</span>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; display: block;">Heat Stress Index Reduction</span>
+                                <strong id="metricStress" style="font-size: 1.1rem; color: var(--text-primary);">--%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trajectory Chart & Species Comparison -->
+            <div class="calculator-preview">
+                <!-- Bar Chart -->
+                <div class="card">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">Canopy Growth & Thermal Trajectory</h3>
+                    <div class="chart-container" style="height: 280px; position: relative;">
+                        <canvas id="thermalChart"></canvas>
+                    </div>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 1rem;">Based on asymptotic canopy scaling as root and leaf structures mature over 10 years.</small>
+                </div>
+
+                <!-- Species Ranking Table -->
+                <div class="card" style="overflow-x: auto;">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">AI Species Cooling Efficacy Ranking</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Comparison of candidate species under identical location, tree count, and area constraints.</p>
+                    <table style="width: 100%; border-collapse: collapse; min-width: 350px; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color); font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 700;">
+                                <th style="padding: 0.6rem 0.25rem;">Rank</th>
+                                <th style="padding: 0.6rem 0.25rem;">Species</th>
+                                <th style="padding: 0.6rem 0.25rem;">Cooling Effect</th>
+                                <th style="padding: 0.6rem 0.25rem; text-align: right;">Efficacy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="speciesRankRows">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>EcoTree AI Sustainability Platform • Built for smart city environmental planning</p>
+        <p class="footer-sub">Premium Plantation Analytics & Carbon Modeling Solutions</p>
+    </footer>
+
+    <script>
+        let thermalChart = null;
+
+        // Species Cooling Factors mapping
+        const COOLING_FACTORS = {
+            'Banyan': 0.80,
+            'Peepal': 0.75,
+            'Neem': 0.65,
+            'Mango': 0.60,
+            'Tamarind': 0.58,
+            'Bamboo': 0.55,
+            'Teak': 0.45,
+            'Eucalyptus': 0.40,
+            'Moringa': 0.35,
+            'Casuarina': 0.38
+        };
+
+        // Location Multipliers mapping
+        const LOCATION_MULTIPLIERS = {
+            'Urban Street': 1.40,
+            'Industrial Zone': 1.35,
+            'Urban Park': 1.20,
+            'Coastal Area': 1.00,
+            'Rural Farmland': 0.85
+        };
+
+        function updateCanopyLabel(val) {
+            document.getElementById('canopyLabel').textContent = val + '%';
+        }
+
+        function getComfortLevel(reduction) {
+            if (reduction >= 4.0) {
+                return { label: 'Excellent Cooling 🌿', color: '#2E7D32', bg: 'rgba(46, 125, 50, 0.15)' };
+            } else if (reduction >= 2.0) {
+                return { label: 'Good Cooling 🌱', color: '#F57F17', bg: 'rgba(245, 127, 23, 0.15)' };
+            } else if (reduction >= 1.0) {
+                return { label: 'Moderate Cooling 🍃', color: '#D84315', bg: 'rgba(216, 67, 21, 0.15)' };
+            } else {
+                return { label: 'Minimal Cooling 💧', color: '#C62828', bg: 'rgba(198, 40, 40, 0.15)' };
+            }
+        }
+
+        function calculateCooling(e) {
+            e.preventDefault();
+
+            const species = document.getElementById('thermalSpecies').value;
+            const trees = parseInt(document.getElementById('thermalTrees').value, 10);
+            const area = parseFloat(document.getElementById('thermalArea').value);
+            const location = document.getElementById('thermalLocation').value;
+            const temp = parseFloat(document.getElementById('thermalTemp').value);
+            const canopy = parseInt(document.getElementById('thermalCanopy').value, 10);
+
+            if (!species || !trees || !area || !location || isNaN(temp)) {
+                return;
+            }
+
+            const base_cooling = COOLING_FACTORS[species] || 0.5;
+            const location_multiplier = LOCATION_MULTIPLIERS[location] || 1.0;
+            const canopy_multiplier = (canopy / 100) * 1.5;
+
+            // Temperature reduction formula
+            let reduction = base_cooling * (trees / area) * 0.05 * location_multiplier * canopy_multiplier;
+            
+            // Apply maximum cap
+            reduction = Math.min(8.0, reduction);
+
+            const newTemp = temp - reduction;
+
+            // Update UI elements
+            document.getElementById('resultReduction').textContent = `-${reduction.toFixed(2)}°C`;
+            document.getElementById('resultNewTemp').textContent = `${newTemp.toFixed(1)}°C`;
+
+            const comfort = getComfortLevel(reduction);
+            const comfortCard = document.getElementById('comfortCard');
+            const comfortLabel = document.getElementById('resultComfort');
+            comfortCard.style.borderLeftColor = comfort.color;
+            comfortLabel.textContent = comfort.label;
+            comfortLabel.style.backgroundColor = comfort.bg;
+            comfortLabel.style.color = comfort.color;
+
+            // Secondary metrics calculations
+            const acOff = Math.max(1, Math.round(trees * (canopy / 100) * location_multiplier * (reduction / 2.5)));
+            const savedKwh = Math.round(acOff * 1400 * (reduction * 0.08));
+            const stressRed = Math.min(100, Math.round(reduction * 12.5));
+
+            document.getElementById('metricAC').textContent = `${acOff.toLocaleString('en-IN')} AC units turned off`;
+            document.getElementById('metricKwh').textContent = `${savedKwh.toLocaleString('en-IN')} kWh / year saved`;
+            document.getElementById('metricStress').textContent = `${stressRed}% heat stress reduction`;
+
+            // Draw growth curve chart
+            renderChart(temp, reduction);
+
+            // Populate ranked table
+            renderRankedTable(trees, area, location, canopy);
+
+            // Show results section
+            document.getElementById('thermalResultsSection').style.display = 'block';
+            document.getElementById('thermalResultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderChart(currentTemp, maxReduction) {
+            const ctx = document.getElementById('thermalChart').getContext('2d');
+            
+            const temps = [
+                currentTemp,
+                currentTemp - (maxReduction * 0.3),
+                currentTemp - (maxReduction * 0.7),
+                currentTemp - maxReduction
+            ];
+
+            if (thermalChart) {
+                thermalChart.destroy();
+            }
+
+            thermalChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Current Temp', 'Year 1 (30%)', 'Year 5 (70%)', 'Year 10 (100%)'],
+                    datasets: [{
+                        label: 'Microclimate Temp (°C)',
+                        data: temps.map(t => parseFloat(t.toFixed(2))),
+                        backgroundColor: [
+                            'rgba(216, 67, 21, 0.7)',  // Orange-red
+                            'rgba(245, 127, 23, 0.7)',  // Orange
+                            'rgba(126, 217, 87, 0.7)',  // Primary green
+                            'rgba(76, 175, 80, 0.7)'    // Accent green
+                        ],
+                        borderColor: [
+                            '#D84315',
+                            '#F57F17',
+                            '#7ED957',
+                            '#4CAF50'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: 'rgba(27, 67, 50, 0.05)' },
+                            title: { display: true, text: 'Temperature (°C)', font: { family: 'Outfit', weight: 'bold' } },
+                            ticks: { font: { family: 'Outfit' }, color: '#1B4332' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Outfit' }, color: '#1B4332' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRankedTable(trees, area, location, canopy) {
+            const tbody = document.getElementById('speciesRankRows');
+            const list = [];
+            const location_multiplier = LOCATION_MULTIPLIERS[location] || 1.0;
+            const canopy_multiplier = (canopy / 100) * 1.5;
+
+            Object.entries(COOLING_FACTORS).forEach(([sp, factor]) => {
+                let red = factor * (trees / area) * 0.05 * location_multiplier * canopy_multiplier;
+                red = Math.min(8.0, red);
+                list.push({ species: sp, reduction: red });
+            });
+
+            // Sort descending by reduction
+            list.sort((a, b) => b.reduction - a.reduction);
+
+            tbody.innerHTML = list.map((item, idx) => {
+                let matchLabel = 'High Efficacy';
+                let matchColor = 'var(--green-accent)';
+                if (item.reduction < 2.0) {
+                    matchLabel = 'Moderate Efficacy';
+                    matchColor = 'var(--text-secondary)';
+                } else if (item.reduction < 1.0) {
+                    matchLabel = 'Low Efficacy';
+                    matchColor = '#dc3545';
+                }
+
+                return `
+                    <tr style="border-bottom: 1px solid rgba(126, 217, 87, 0.15); font-size: 0.9rem;">
+                        <td style="padding: 0.75rem 0.25rem; font-weight: 700;">#${idx + 1}</td>
+                        <td style="padding: 0.75rem 0.25rem; font-weight: 500; color: var(--text-primary);">${item.species}</td>
+                        <td style="padding: 0.75rem 0.25rem; color: var(--text-secondary); font-weight: bold;">-${item.reduction.toFixed(2)}°C</td>
+                        <td style="padding: 0.75rem 0.25rem; text-align: right; font-weight: 700; color: ${matchColor};">${matchLabel}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function resetThermal() {
+            document.getElementById('thermalForm').reset();
+            document.getElementById('thermalResultsSection').style.display = 'none';
+            updateCanopyLabel(50);
+            if (thermalChart) {
+                thermalChart.destroy();
+                thermalChart = null;
+            }
+        }
+    </script>
+</body>
+
+</html>

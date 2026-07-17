@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Pollution & Tree Recommendations - EcoTree</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Premium Sticky Navigation -->
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9" />
+                        <path d="M12 14V22M10 14C10 14 7 12 7 9C7 6 9 6 10 6M14 14C14 14 17 12 17 9C17 6 15 6 14 6"
+                            stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                        <circle cx="7" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <circle cx="17" cy="9" r="0.8" fill="white" opacity="0.7" />
+                        <path d="M6 12L4 10M18 12L20 10" stroke="white" stroke-width="1.2" stroke-linecap="round"
+                            opacity="0.6" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree</span>
+                    <span class="logo-text-sub">AI Sustainability</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="advanced-calculator.html">Advanced</a></li>
+                <li><a href="pollution.html" class="active">Pollution</a></li>
+                <li><a href="ai_features/index.html">AI Features</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Search Card -->
+        <div class="card">
+            <h1 class="card-title">City Pollution & Tree Recommendation Calculator</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Enter a city to retrieve real-time air quality metrics, ambient climate zones, and get AI-matched tree species recommendations to combat local pollutants.
+            </p>
+
+            <div class="form-group" style="max-width: 600px; display: flex; gap: 1rem;">
+                <div style="flex: 1; position: relative;">
+                    <input type="text" id="citySearchInput" list="cityDatalist" placeholder="Type city name, e.g. Bengaluru, Delhi, Hosur..." style="width: 100%; padding: 0.85rem 1rem; border: 2px solid var(--border-color); border-radius: 12px; outline: none; font-size: 1rem;">
+                    <datalist id="cityDatalist"></datalist>
+                </div>
+                <button class="btn btn-primary" onclick="lookupCityPollution()">Analyze Pollution</button>
+            </div>
+
+            <div id="loadingIndicator" class="alert alert-info" style="display: none; margin-top: 1.5rem;">
+                Retrieving real-time atmospheric data...
+            </div>
+            <div id="errorBanner" class="alert alert-error" style="display: none; margin-top: 1.5rem;"></div>
+        </div>
+
+        <!-- Dynamic Pollution Dashboard (Visible after search) -->
+        <div id="pollutionDashboard" style="display: none;">
+            
+            <!-- Grid 1: Status & Atmosphere -->
+            <div class="planner-grid" style="margin-bottom: 2rem;">
+                <!-- Large Status Badge Card -->
+                <div class="card" id="statusCard" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-left: 8px solid var(--green-accent);">
+                    <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); font-weight: 600;">Pollution Rating</span>
+                    <h2 id="pollutionStatusBadge" style="font-size: 2.8rem; font-weight: 800; margin: 0.5rem 0; line-height: 1.1;">--</h2>
+                    <p id="pollutionCategoryDesc" style="font-weight: 500;">Awaiting Input</p>
+                </div>
+
+                <!-- Atmospheric Details -->
+                <div class="card" style="margin-bottom: 0;">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Atmospheric Parameters</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Real-Time AQI (US Index):</span>
+                            <strong id="metricAQI">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">PM2.5 Concentration:</span>
+                            <strong id="metricPM25">-- μg/m³</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">PM10 Concentration:</span>
+                            <strong id="metricPM10">-- μg/m³</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Current Temperature:</span>
+                            <strong id="metricTemp">-- °C</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Relative Humidity:</span>
+                            <strong id="metricHumidity">-- %</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Climate Zone:</span>
+                            <strong id="metricZone" style="color: var(--green-accent);">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: AI Recommended Trees -->
+            <div class="card">
+                <h2 class="card-title">AI-Matched Tree Species Recommendations</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">These species are dynamically selected based on soil type matching, humidity tolerances, and high particulate filtration capacities.</p>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 600px; text-align: left;" id="treeTable">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins', sans-serif; font-weight: 700;">
+                                <th style="padding: 1rem 0.5rem;">Species Name</th>
+                                <th style="padding: 1rem 0.5rem;">CO₂ Absorption</th>
+                                <th style="padding: 1rem 0.5rem;">Cooling Potential</th>
+                                <th style="padding: 1rem 0.5rem;">Water Needs</th>
+                                <th style="padding: 1rem 0.5rem; text-align: right;">Climate Match Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recommendedTreeRows">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Card 3: Actionable Policy & Reduction Suggestions -->
+            <div class="card" style="background: rgba(76, 175, 80, 0.08); border-color: rgba(76, 175, 80, 0.2);">
+                <h2 class="card-title" style="color: var(--text-primary); font-size: 1.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>💡</span> Actionable Pollution Abatement Plan
+                </h2>
+                <div id="suggestionsList" style="line-height: 1.7; font-size: 1rem; color: var(--text-primary);">
+                    <!-- Dynamic suggestions based on AQI -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>EcoTree AI Sustainability Platform • Built for smart city environmental planning</p>
+        <p class="footer-sub">Premium Plantation Analytics & Carbon Modeling Solutions</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/cities-data.js"></script>
+    <script src="static/auth.js"></script>
+    <script src="static/auth-nav.js"></script>
+    <script src="static/pollution.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate city datalist autocomplete
+            const list = document.getElementById('cityDatalist');
+            if (list && typeof INDIAN_CITIES !== 'undefined') {
+                const cityKeys = Object.keys(INDIAN_CITIES).sort();
+                list.innerHTML = cityKeys.map(city => `<option value="${city}">`).join('');
+            }
+        });
+    </script>
+</body>
+
+</html>

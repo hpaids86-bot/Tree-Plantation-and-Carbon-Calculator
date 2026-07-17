@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impact Dashboard • Tree Plantation Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="dashboard__header">
+        <div>
+          <p class="eyebrow">Impact dashboard</p>
+          <h1>Your plantation performance</h1>
+          <p>Review your cumulative CO₂ savings and badge milestones.</p>
+        </div>
+        <div class="badge" style="background: {{ badge.color }}">
+          <p>Total badge</p>
+          <strong>{{ badge.label }}</strong>
+        </div>
+      </header>
+
+      <section class="panel-grid">
+        <div class="panel">
+          <h2>Total CO₂ saved</h2>
+          <p class="stat">{{ '%.1f'|format(total_saved) }} kg</p>
+        </div>
+        <div class="panel">
+          <h2>History entries</h2>
+          <p class="stat">{{ history|length }}</p>
+        </div>
+        <div class="panel">
+          <h2>Next badge target</h2>
+          {% if badge.label != 'Platinum' %}
+          <p>Keep planting to unlock the {{ 'Platinum' if badge.label == 'Gold' else 'Gold' }} tier.</p>
+          {% else %}
+          <p>You are already at the top tier!</p>
+          {% endif %}
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <h2>CO₂ absorption trend</h2>
+          <a class="btn btn--ghost" href="{{ url_for('index') }}">Add more records</a>
+        </div>
+        <canvas id="co2-chart" height="140"></canvas>
+      </section>
+
+      <section class="panel">
+        <h2>Recent calculations</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Tree</th>
+                <th>Quantity</th>
+                <th>City</th>
+                <th>Annual CO₂ (kg)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in history %}
+              <tr>
+                <td>{{ entry['date'][:10] }}</td>
+                <td>{{ entry['tree_name'] }}</td>
+                <td>{{ entry['quantity'] }}</td>
+                <td>{{ entry['city'] }}</td>
+                <td>{{ '%.1f'|format(entry['total_co2']) }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="5">No history recorded yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      window.dashboardData = {{ dashboard_payload|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  </body>
+</html>

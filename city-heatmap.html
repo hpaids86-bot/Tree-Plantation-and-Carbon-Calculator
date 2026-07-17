@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City Heatmap – EcoTree AI Environmental Analyzer</title>
+    <meta name="description" content="Visualize Indian city pollution zones: green, moderate, and high pollution areas through dynamic Chart.js bubble charts, bar charts, and zone classification.">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9"/>
+                        <path d="M12 14V22" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree AI</span>
+                    <span class="logo-text-sub">Environmental Analyzer</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="pollution.html">Pollution</a></li>
+                <li><a href="green-city-score.html">Green Score</a></li>
+                <li><a href="roi-analyzer.html">ROI Analyzer</a></li>
+                <li><a href="city-heatmap.html" class="active">City Heatmap</a></li>
+                <li><a href="impact-dashboard.html">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="dark-mode-btn" id="darkModeBtn">🌙 Dark</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero -->
+        <div class="page-hero fade-in">
+            <div class="page-hero-kicker">🗺️ Premium Module</div>
+            <h1>Smart City Pollution Heatmap</h1>
+            <p>Visualize India's air quality landscape across 100+ cities. Identify green zones, moderate zones, and critical pollution areas using dynamic data-driven charts.</p>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="heatmap-filters">
+            <button class="filter-btn active" id="btnAll" onclick="setFilter('all', this)">🌐 All Cities</button>
+            <button class="filter-btn" id="btnTier1" onclick="setFilter('tier1', this)">🏙️ Tier 1 Cities</button>
+            <button class="filter-btn" id="btnClean" onclick="setFilter('clean', this)">🟢 Cleanest</button>
+            <button class="filter-btn" id="btnPolluted" onclick="setFilter('polluted', this)">🔴 Most Polluted</button>
+            <button class="filter-btn" id="btnTN" onclick="setFilter('tn', this)">🌴 Tamil Nadu</button>
+            <button class="filter-btn" id="btnKarnataka" onclick="setFilter('karnataka', this)">🌿 Karnataka</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="zone-legend">
+            <div class="zone-legend-item">
+                <div class="zone-dot" style="background:#00c853;"></div> Green Zone (AQI ≤ 100)
+            </div>
+            <div class="zone-legend-item">
+                <div class="zone-dot" style="background:#ffd600;"></div> Moderate Zone (AQI 101–200)
+            </div>
+            <div class="zone-legend-item">
+                <div class="zone-dot" style="background:#d50000;"></div> High Pollution (AQI > 200)
+            </div>
+        </div>
+
+        <!-- Chart 1: Horizontal Bar – Top Polluted vs Cleanest -->
+        <div class="chart-wrapper fade-up">
+            <div class="chart-title">🏭 Top 20 Cities by AQI – Polluted to Cleanest</div>
+            <div style="height: 520px; position:relative;">
+                <canvas id="aqiBarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 2: Bubble – Population vs AQI -->
+        <div class="chart-wrapper fade-up" style="margin-top:1.5rem;">
+            <div class="chart-title">🫧 Population vs AQI Bubble Map (bubble size = PM2.5)</div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:0.75rem;">Each bubble is a city. Larger = higher PM2.5. X-axis = AQI, Y-axis = Population (millions).</p>
+            <div style="height: 380px; position:relative;">
+                <canvas id="bubbleChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 3: Grouped Bar – Tier 1 PM2.5 / PM10 / AQI -->
+        <div class="chart-wrapper fade-up" style="margin-top:1.5rem;">
+            <div class="chart-title">📊 Tier 1 Cities – AQI / PM2.5 / PM10 Comparison</div>
+            <div style="height: 320px; position:relative;">
+                <canvas id="tier1Chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Zone Classification Cards -->
+        <div class="card fade-up" style="margin-top:2rem;">
+            <h2 class="card-title">🗂️ City Zone Classification</h2>
+            <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Cities categorized by their AQI into three environmental zones.</p>
+            <div class="zone-cards-grid" id="zoneCardsGrid"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p><strong>EcoTree AI</strong> – Smart City Heatmap Module</p>
+        <p class="footer-sub">Dynamic pollution zone visualization for 100+ Indian cities using Chart.js</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/cities-data.js"></script>
+    <script src="static/premium-modules.js"></script>
+    <script>
+        let aqiBar = null, bubble = null, tier1Chart = null;
+
+        function getChartColors(aqiValues) {
+            return aqiValues.map(v => {
+                if (v <= 100) return 'rgba(0,200,83,0.75)';
+                if (v <= 200) return 'rgba(255,214,0,0.75)';
+                return 'rgba(213,0,0,0.75)';
+            });
+        }
+
+        function renderCharts(filter = 'all') {
+            const top = HeatmapEngine.buildTopPollutedData(30);
+            const tier1 = HeatmapEngine.buildTier1Data();
+            const bubbles = HeatmapEngine.buildBubbleData();
+
+            // Filter for AQI bar
+            let labels = top.labels, aqi = top.aqi;
+            if (filter === 'clean') {
+                const zipped = labels.map((l,i)=>({l,v:aqi[i]})).sort((a,b)=>a.v-b.v).slice(0,20);
+                labels = zipped.map(z=>z.l); aqi = zipped.map(z=>z.v);
+            } else if (filter === 'polluted') {
+                labels = top.labels.slice(0,20); aqi = top.aqi.slice(0,20);
+            } else if (filter === 'tn') {
+                const tnCities = ['Chennai','Coimbatore','Madurai','Salem','Trichy','Tiruchirappalli','Erode','Vellore','Tirunelveli','Thoothukudi','Tiruppur','Thanjavur'];
+                const zipped = tnCities.filter(c => typeof INDIAN_CITIES!=='undefined' && INDIAN_CITIES[c]).map(c=>({l:c,v:INDIAN_CITIES[c].aqi}));
+                labels = zipped.map(z=>z.l); aqi = zipped.map(z=>z.v);
+            } else if (filter === 'karnataka') {
+                const kCities = ['Bangalore','Mysore','Hubli','Mangalore','Belgaum','Bellary','Kalaburagi','Davanagere'];
+                const zipped = kCities.filter(c=>typeof INDIAN_CITIES!=='undefined' && INDIAN_CITIES[c]).map(c=>({l:c,v:INDIAN_CITIES[c].aqi}));
+                labels = zipped.map(z=>z.l); aqi = zipped.map(z=>z.v);
+            } else if (filter === 'tier1') {
+                labels = tier1.labels; aqi = tier1.aqi;
+            }
+
+            // AQI Bar Chart
+            if (aqiBar) aqiBar.destroy();
+            aqiBar = new Chart(document.getElementById('aqiBarChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'AQI',
+                        data: aqi,
+                        backgroundColor: getChartColors(aqi),
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` AQI: ${ctx.raw} — ${ctx.raw <= 100 ? '🟢 Good' : ctx.raw <= 200 ? '🟡 Moderate' : '🔴 Hazardous'}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(126,217,87,0.08)' },
+                            ticks: { color: 'rgba(100,120,100,0.8)', font: { size: 11 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: 'var(--text-secondary)', font: { size: 11, weight: '600' } }
+                        }
+                    }
+                }
+            });
+
+            // Bubble Chart
+            if (bubble) bubble.destroy();
+            bubble = new Chart(document.getElementById('bubbleChart').getContext('2d'), {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Cities',
+                        data: bubbles,
+                        backgroundColor: bubbles.map(b => b.x <= 100 ? 'rgba(0,200,83,0.55)' : b.x <= 200 ? 'rgba(255,214,0,0.55)' : 'rgba(213,0,0,0.55)'),
+                        borderColor: bubbles.map(b => b.x <= 100 ? '#00c853' : b.x <= 200 ? '#ffd600' : '#d50000'),
+                        borderWidth: 1.5,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const d = ctx.raw;
+                                    return ` ${d.label}: AQI ${d.x}, Pop ${d.y}M`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display:true, text:'AQI', color:'var(--text-secondary)' }, grid:{color:'rgba(126,217,87,0.08)'}, ticks:{color:'rgba(100,120,100,0.8)'} },
+                        y: { title: { display:true, text:'Population (Millions)', color:'var(--text-secondary)' }, grid:{color:'rgba(126,217,87,0.08)'}, ticks:{color:'rgba(100,120,100,0.8)'} }
+                    }
+                }
+            });
+
+            // Tier 1 Grouped Bar
+            if (tier1Chart) tier1Chart.destroy();
+            tier1Chart = new Chart(document.getElementById('tier1Chart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: tier1.labels,
+                    datasets: [
+                        { label: 'AQI', data: tier1.aqi, backgroundColor: 'rgba(213,0,0,0.65)', borderRadius: 4 },
+                        { label: 'PM2.5', data: tier1.pm25, backgroundColor: 'rgba(255,152,0,0.65)', borderRadius: 4 },
+                        { label: 'PM10', data: tier1.pm10, backgroundColor: 'rgba(3,169,244,0.65)', borderRadius: 4 },
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: 'var(--text-secondary)', font: { size: 11 } } } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: 'var(--text-secondary)', font: { size: 11, weight: '600' } } },
+                        y: { grid: { color: 'rgba(126,217,87,0.08)' }, ticks: { color: 'rgba(100,120,100,0.8)' } }
+                    }
+                }
+            });
+
+            // Zone Cards
+            buildZoneCards();
+        }
+
+        function buildZoneCards() {
+            const zones = HeatmapEngine.classifyCities();
+            const grid = document.getElementById('zoneCardsGrid');
+            grid.innerHTML = `
+                <div class="zone-card zone-card-green fade-up">
+                    <div class="zone-card-title" style="color:#00c853;">🟢 Green Zone <span style="font-size:0.85rem; font-weight:400;">(${zones.green.length} cities)</span></div>
+                    <div class="zone-city-list">
+                        ${zones.green.map(c => `<span class="zone-city-tag" style="background:rgba(0,200,83,0.12);">${c}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="zone-card zone-card-moderate fade-up" style="transition-delay:0.1s;">
+                    <div class="zone-card-title" style="color:#ffd600;">🟡 Moderate Zone <span style="font-size:0.85rem; font-weight:400;">(${zones.moderate.length} cities)</span></div>
+                    <div class="zone-city-list">
+                        ${zones.moderate.map(c => `<span class="zone-city-tag" style="background:rgba(255,214,0,0.12);">${c}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="zone-card zone-card-high fade-up" style="transition-delay:0.2s;">
+                    <div class="zone-card-title" style="color:#d50000;">🔴 High Pollution Zone <span style="font-size:0.85rem; font-weight:400;">(${zones.high.length} cities)</span></div>
+                    <div class="zone-city-list">
+                        ${zones.high.map(c => `<span class="zone-city-tag" style="background:rgba(213,0,0,0.08);">${c}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                grid.querySelectorAll('.fade-up').forEach((el,i) => setTimeout(() => el.classList.add('revealed'), i*100));
+            }, 200);
+        }
+
+        function setFilter(filter, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCharts(filter);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCharts('all');
+        });
+    </script>
+</body>
+</html>

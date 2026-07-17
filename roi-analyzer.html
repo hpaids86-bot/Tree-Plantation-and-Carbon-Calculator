@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Plantation ROI Analyzer – EcoTree AI</title>
+    <meta name="description" content="Analyze the environmental ROI of tree plantation: carbon captured, cooling impact, water retention, biodiversity score, survival prediction, and Ecological Benefit Index.">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="frosty-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L8 8H10V14H14V8H16L12 2Z" fill="white" opacity="0.9"/>
+                        <path d="M12 14V22" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-text-main">EcoTree AI</span>
+                    <span class="logo-text-sub">Environmental Analyzer</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="calculator.html">Calculator</a></li>
+                <li><a href="pollution.html">Pollution</a></li>
+                <li><a href="green-city-score.html">Green Score</a></li>
+                <li><a href="roi-analyzer.html" class="active">ROI Analyzer</a></li>
+                <li><a href="city-heatmap.html">City Heatmap</a></li>
+                <li><a href="impact-dashboard.html">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="dark-mode-btn" id="darkModeBtn">🌙 Dark</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero -->
+        <div class="page-hero fade-in">
+            <div class="page-hero-kicker">📊 Research Module</div>
+            <h1>Tree Plantation ROI Analyzer</h1>
+            <p>Calculate environmental return on investment: carbon captured, urban cooling, water retention, biodiversity, survival probability, and Ecological Benefit Index.</p>
+        </div>
+
+        <!-- Inputs -->
+        <div class="card fade-up">
+            <h2 class="card-title">⚙️ Plantation Parameters</h2>
+            <div class="roi-inputs-grid">
+                <div class="form-group">
+                    <label for="roiTrees">Number of Trees</label>
+                    <input type="number" id="roiTrees" placeholder="e.g. 500" min="1" value="100">
+                </div>
+                <div class="form-group">
+                    <label for="roiSpecies">Tree Species</label>
+                    <select id="roiSpecies">
+                        <option value="Neem">Neem</option>
+                        <option value="Peepal">Peepal</option>
+                        <option value="Banyan">Banyan</option>
+                        <option value="Mango">Mango</option>
+                        <option value="Tamarind">Tamarind</option>
+                        <option value="Teak">Teak</option>
+                        <option value="Bamboo">Bamboo</option>
+                        <option value="Moringa">Moringa</option>
+                        <option value="Casuarina">Casuarina</option>
+                        <option value="Eucalyptus">Eucalyptus</option>
+                        <option value="Jamun">Jamun</option>
+                        <option value="Arjun">Arjun</option>
+                        <option value="Indian Rosewood">Indian Rosewood</option>
+                        <option value="Amla">Amla</option>
+                        <option value="Mahogany">Mahogany</option>
+                        <option value="Ashoka">Ashoka</option>
+                        <option value="Kadamba">Kadamba</option>
+                        <option value="Gulmohar">Gulmohar</option>
+                        <option value="Pongamia">Pongamia</option>
+                        <option value="Jackfruit">Jackfruit</option>
+                        <option value="Coconut">Coconut</option>
+                        <option value="Palmyra">Palmyra</option>
+                        <option value="Drumstick">Drumstick</option>
+                        <option value="Bael">Bael</option>
+                        <option value="Karanj">Karanj</option>
+                        <option value="Silver Oak">Silver Oak</option>
+                        <option value="Rain Tree">Rain Tree</option>
+                        <option value="Wild Almond">Wild Almond</option>
+                        <option value="Indian Cork Tree">Indian Cork Tree</option>
+                        <option value="Peltophorum">Peltophorum</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="roiCity">Nearest City (for climate data)</label>
+                    <select id="roiCity">
+                        <option value="">— Optional —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="roiYears">Years of Growth: <strong id="yearsLabel">10</strong></label>
+                    <div class="range-slider-group">
+                        <input type="range" id="roiYears" min="1" max="50" value="10"
+                            oninput="document.getElementById('yearsLabel').textContent = this.value">
+                    </div>
+                    <small class="form-hint">Projection period: 1 – 50 years</small>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="runROIAnalysis()">🔬 Analyze Environmental ROI</button>
+                <button class="btn btn-secondary" onclick="resetROI()">↺ Reset</button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="roiResults" style="display:none;">
+
+            <!-- Metric Cards -->
+            <div class="roi-results-grid" id="roiMetricsGrid"></div>
+
+            <!-- Charts Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top:1.5rem;" id="chartsRow">
+                <div class="chart-wrapper">
+                    <div class="chart-title">📈 Carbon Captured Over Time</div>
+                    <div style="height:240px; position:relative;">
+                        <canvas id="carbonChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-title">🌊 Water Retention (kL/cumulative)</div>
+                    <div style="height:240px; position:relative;">
+                        <canvas id="waterChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Research: Survival Prediction -->
+            <div class="card fade-up" style="margin-top:1.5rem;">
+                <h2 class="card-title">🧬 Tree Survival Prediction Model</h2>
+                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+                    Predicted survival probability across 4 key environmental factors using species-climate compatibility matrices.
+                </p>
+                <div class="survival-grid" id="survivalGrid"></div>
+                <div style="margin-top:1.5rem; padding:1.25rem; background:rgba(126,217,87,0.06); border-radius:14px; border: var(--glass-border);">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary);">Overall Survival Probability</div>
+                            <div id="overallSurvivalVal" style="font-size:2.5rem; font-weight:900; color:var(--text-primary);">--</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary);">Plantation Success Score</div>
+                            <div id="successScoreVal" style="font-size:2.5rem; font-weight:900; background: linear-gradient(135deg, #7ED957, #2c6e49); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">--</div>
+                        </div>
+                        <div id="successScoreBar" style="flex:1; min-width:200px;">
+                            <div class="progress-label"><span>Success Rating</span><span id="successPct">0%</span></div>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" id="successBarFill" data-width="0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ecological Benefit Index -->
+            <div class="card fade-up" style="margin-top:1.5rem;">
+                <h2 class="card-title">🌍 Ecological Benefit Index (EBI)</h2>
+                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+                    A composite 0–100 index combining carbon sequestration, urban cooling contribution, biodiversity support, and water conservation impact.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap:2rem; align-items:center;">
+                    <div class="ebi-gauge-wrap">
+                        <svg width="180" height="180" viewBox="0 0 180 180">
+                            <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(126,217,87,0.12)" stroke-width="16"/>
+                            <circle id="ebiArc" cx="90" cy="90" r="70" fill="none"
+                                stroke="url(#ebiGrad)" stroke-width="16"
+                                stroke-linecap="round"
+                                stroke-dasharray="439.8"
+                                stroke-dashoffset="439.8"
+                                transform="rotate(-90 90 90)"
+                                style="transition: stroke-dashoffset 1.5s ease-out;"/>
+                            <defs>
+                                <linearGradient id="ebiGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#00c853"/>
+                                    <stop offset="100%" stop-color="#7ED957"/>
+                                </linearGradient>
+                            </defs>
+                            <text id="ebiText" x="90" y="84" text-anchor="middle" font-size="36" font-weight="900"
+                                fill="var(--text-primary)" font-family="Outfit,sans-serif">0</text>
+                            <text x="90" y="108" text-anchor="middle" font-size="11" fill="var(--text-secondary)"
+                                font-family="Outfit,sans-serif">EBI Score</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="progress-label"><span>Carbon Sequestration</span><span id="ebiCarbonPct">0%</span></div>
+                        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="ebiCarbonBar" style="background:#4CAF50;" data-width="0%"></div></div>
+                        <div style="margin-bottom:0.5rem;"></div>
+                        <div class="progress-label"><span>Urban Cooling</span><span id="ebiCoolingPct">0%</span></div>
+                        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="ebiCoolingBar" style="background:#03A9F4;" data-width="0%"></div></div>
+                        <div style="margin-bottom:0.5rem;"></div>
+                        <div class="progress-label"><span>Biodiversity</span><span id="ebiBiodivPct">0%</span></div>
+                        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="ebiBiodivBar" style="background:#9C27B0;" data-width="0%"></div></div>
+                        <div style="margin-bottom:0.5rem;"></div>
+                        <div class="progress-label"><span>Water Conservation</span><span id="ebiWaterPct">0%</span></div>
+                        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="ebiWaterBar" style="background:#FF9800;" data-width="0%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p><strong>EcoTree AI</strong> – Tree Plantation ROI Analyzer</p>
+        <p class="footer-sub">Research-grade carbon, cooling, water, biodiversity, and survival metrics for smart plantation planning</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/cities-data.js"></script>
+    <script src="static/premium-modules.js"></script>
+    <script>
+        let carbonChartInst = null, waterChartInst = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sel = document.getElementById('roiCity');
+            if (typeof INDIAN_CITIES !== 'undefined') {
+                Object.keys(INDIAN_CITIES).sort().forEach(city => {
+                    const opt = document.createElement('option');
+                    opt.value = city; opt.textContent = city;
+                    sel.appendChild(opt);
+                });
+            }
+        });
+
+        function runROIAnalysis() {
+            const trees   = parseInt(document.getElementById('roiTrees').value);
+            const species = document.getElementById('roiSpecies').value;
+            const city    = document.getElementById('roiCity').value;
+            const years   = parseInt(document.getElementById('roiYears').value);
+
+            if (!trees || trees < 1) { alert('Please enter a valid tree count.'); return; }
+
+            const result = ROIAnalyzer.analyze(trees, species, years, city);
+            displayROI(result, species);
+        }
+
+        function displayROI(result, species) {
+            const div = document.getElementById('roiResults');
+            div.style.display = 'block';
+            div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Metric Cards
+            const metrics = [
+                { icon:'💨', value: result.carbonTonnes, label:'Carbon Captured', unit:'tonnes CO₂' },
+                { icon:'🌡️', value: result.coolingImpact, label:'Cooling Impact', unit:'°C equivalent' },
+                { icon:'💧', value: (result.waterRetained/1000).toFixed(0), label:'Water Retained', unit:'kilo-liters' },
+                { icon:'🦋', value: result.biodiversityScore, label:'Biodiversity Score', unit:'/ 100' },
+                { icon:'📈', value: result.roi + '%', label:'Environmental ROI', unit:'vs. investment cost' },
+                { icon:'🌬️', value: (result.oxygenGenerated/1000).toFixed(1), label:'O₂ Generated', unit:'tonnes' },
+            ];
+
+            document.getElementById('roiMetricsGrid').innerHTML = metrics.map(m => `
+                <div class="roi-metric-card fade-up">
+                    <span class="roi-metric-icon">${m.icon}</span>
+                    <div class="roi-metric-value">${m.value}</div>
+                    <div class="roi-metric-label">${m.label}</div>
+                    <div class="roi-metric-unit">${m.unit}</div>
+                </div>
+            `).join('');
+
+            // Charts
+            const tl = result.timeline;
+            const chartDefaults = {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color:'rgba(126,217,87,0.08)' }, ticks: { color:'rgba(100,120,100,0.7)', maxTicksLimit:8, font:{size:10} } },
+                    y: { grid: { color:'rgba(126,217,87,0.08)' }, ticks: { color:'rgba(100,120,100,0.7)', font:{size:10} } }
+                }
+            };
+
+            if (carbonChartInst) carbonChartInst.destroy();
+            carbonChartInst = new Chart(document.getElementById('carbonChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: tl.labels,
+                    datasets: [{
+                        data: tl.carbon,
+                        borderColor: '#4CAF50', backgroundColor: 'rgba(76,175,80,0.1)',
+                        fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 2
+                    }]
+                },
+                options: { ...chartDefaults }
+            });
+
+            if (waterChartInst) waterChartInst.destroy();
+            waterChartInst = new Chart(document.getElementById('waterChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: tl.labels,
+                    datasets: [{
+                        data: tl.water,
+                        borderColor: '#03A9F4', backgroundColor: 'rgba(3,169,244,0.08)',
+                        fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 2
+                    }]
+                },
+                options: { ...chartDefaults }
+            });
+
+            // Survival Prediction
+            const sf = result.survivalFactor;
+            document.getElementById('survivalGrid').innerHTML = [
+                { label: 'Species Hardiness', score: sf.species },
+                { label: 'Climate Match',     score: sf.climate },
+                { label: 'Soil Compatibility', score: sf.soil },
+                { label: 'Rainfall Index',    score: sf.rainfall },
+            ].map(f => `
+                <div class="survival-factor-card fade-up">
+                    <div class="survival-factor-name">${f.label}</div>
+                    <div class="survival-factor-score">${f.score}<small style="font-size:1rem;">%</small></div>
+                    <div class="survival-bar">
+                        <div class="survival-bar-fill" data-width="${f.score}%" style="width:0%;"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('overallSurvivalVal').textContent = Math.round(sf.overall * 100) + '%';
+            document.getElementById('successScoreVal').textContent = result.successScore;
+            document.getElementById('successPct').textContent = result.successScore + '%';
+            const ssBar = document.getElementById('successBarFill');
+            ssBar.dataset.width = result.successScore + '%';
+
+            // EBI
+            const ebi = result.ebi;
+            const ebiArc = document.getElementById('ebiArc');
+            const ebiCirc = 439.8;
+            setTimeout(() => {
+                ebiArc.style.strokeDashoffset = ebiCirc - (ebi / 100) * ebiCirc;
+            }, 300);
+            let ebiCount = 0;
+            const ebiInterval = setInterval(() => {
+                ebiCount = Math.min(ebiCount + 1, ebi);
+                document.getElementById('ebiText').textContent = ebiCount;
+                if (ebiCount >= ebi) clearInterval(ebiInterval);
+            }, 25);
+
+            // EBI sub-bars (approximate per component)
+            const carbonPct = Math.min(100, (result.carbonTonnes / 50) * 100);
+            const coolingPct = Math.min(100, result.coolingImpact * 50);
+            const biodivPct = result.biodiversityScore;
+            const waterPct = Math.min(100, (result.waterRetained / 50000) * 100);
+            ['Carbon','Cooling','Biodiv','Water'].forEach((k, i) => {
+                const vals = [carbonPct, coolingPct, biodivPct, waterPct];
+                const bar = document.getElementById('ebi' + k + 'Bar');
+                const pct = document.getElementById('ebi' + k + 'Pct');
+                if (bar && pct) {
+                    bar.dataset.width = Math.round(vals[i]) + '%';
+                    pct.textContent = Math.round(vals[i]) + '%';
+                }
+            });
+
+            // Trigger animations
+            setTimeout(() => {
+                div.querySelectorAll('.fade-up').forEach((el, i) => {
+                    setTimeout(() => el.classList.add('revealed'), i * 80);
+                });
+                div.querySelectorAll('[data-width]').forEach(el => {
+                    el.style.width = el.dataset.width;
+                });
+            }, 200);
+        }
+
+        function resetROI() {
+            document.getElementById('roiTrees').value = 100;
+            document.getElementById('roiYears').value = 10;
+            document.getElementById('yearsLabel').textContent = '10';
+            document.getElementById('roiResults').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

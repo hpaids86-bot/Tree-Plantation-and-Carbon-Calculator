@@ -1,0 +1,24 @@
+{
+  "cities": [
+    {"name": "Mumbai", "climate": "tropical"},
+    {"name": "Delhi", "climate": "dry"},
+    {"name": "Chennai", "climate": "humid"},
+    {"name": "Bengaluru", "climate": "temperate"},
+    {"name": "Hyderabad", "climate": "dry"},
+    {"name": "Kolkata", "climate": "humid"},
+    {"name": "Jaipur", "climate": "dry"},
+    {"name": "Pune", "climate": "temperate"},
+    {"name": "Kochi", "climate": "tropical"}
+  ],
+  "recommendations": [
+    {"city": "Mumbai", "trees": ["Neem", "Banyan", "Gulmohar"]},
+    {"city": "Delhi", "trees": ["Peepal", "Neem", "Teak"]},
+    {"city": "Chennai", "trees": ["Mango", "Rain Tree", "Jamun"]},
+    {"city": "Bengaluru", "trees": ["Rain Tree", "Teak", "Ashoka"]},
+    {"city": "Hyderabad", "trees": ["Neem", "Gulmohar", "Teak"]},
+    {"city": "Kolkata", "trees": ["Peepal", "Mango", "Jamun"]},
+    {"city": "Jaipur", "trees": ["Neem", "Peepal", "Banyan"]},
+    {"city": "Pune", "trees": ["Rain Tree", "Ashoka", "Gulmohar"]},
+    {"city": "Kochi", "trees": ["Mango", "Rain Tree", "Jamun"]}
+  ]
+}
